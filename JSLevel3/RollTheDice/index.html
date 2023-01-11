@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/RollTheDice/style.css">
+    <script>
+        var numDice;
+        var numRolls;
+        var roll1;
+        var roll2;
+        var roll3;
+        var rollSum;
+        var doubles;
+        var triples;
+        var arrayAllNums = [];
+        function initialize() {
+            diceTable = document.getElementById("dicetable");
+            tableHeader = document.getElementById("tableheader");
+            chooseDice();
+            chooseRolls();
+            update();
+            addColumns();
+        }
+
+        function update() {
+            document.getElementById("dicedisplay").innerHTML = numDice;
+            document.getElementById("rollsdisplay").innerHTML = numRolls;
+        }
+
+        function addColumns() {
+            if (numDice > 1) {
+                var double = tableHeader.insertCell(-1);
+                double.innerHTML = "Double rolls";
+                if (numDice > 2) {
+                    var triple = tableHeader.insertCell(-1);
+                    triple.innerHTML = "Triple rolls"
+                }
+            }
+        }
+
+        function rollDice() {
+            for (let i = 0; i < numRolls; i++) {
+                roll1 = Math.floor((Math.random() * (6 - 1) + 1));
+                rollSum = roll1;
+                if (numDice > 1) {
+                    roll2 = Math.floor((Math.random() * (6 - 1) + 1));
+                    rollSum += roll2;
+                    if (numDice > 2) {
+                        roll3 = Math.floor((Math.random() * (6 - 1) + 1));
+                        rollSum += roll3;
+                        if ((roll3 === roll2) && (roll3 === roll1)) {
+                            triples++;
+                        }
+                        else if ((roll3 === roll2) || (roll3 === roll1)) {
+                            doubles++;
+                        }
+                    }
+                    if (roll2 === roll1) {
+                        doubles++;
+                    }
+                }
+
+                var newRow = diceTable.insertRow();
+                newRow.setAttribute('id', 'row' + i);
+                var newCell = newRow.insertCell();
+                newCell.innerHTML = "Roll " + (i + 1);
+                newCell = newRow.insertCell();
+                newCell.innerHTML = rollSum;
+                if((i + numDice) <= (numDice * 6)){
+                newCell = newRow.insertCell();
+                newCell.innerHTML = (i + numDice);
+            }
+            }
+            tableInfo();
+        }
+
+        function tableInfo() { 
+        let max = (numDice * 6);
+        let visMax = ((numRolls - 1) + numDice);
+        if(visMax < max) { 
+            for(i = visMax + 1; i <= max; i++){
+                newRow = diceTable.insertRow();
+                newRow.setAttribute('id', 'row' + i);
+                newCell = newRow.insertCell(0);
+                newCell = newRow.insertCell(1);
+                newCell = newRow.insertCell(2);
+                newCell.innerHTML = i;
+            }
+        }
+    }
+        function chooseDice() {
+            numDice = parseInt(prompt("How many dice would you like to roll? Please enter 1, 2, or 3.", "1"));
+            while (numDice != 1 && numDice != 2 && numDice != 3) {
+                numDice = parseInt(prompt("How many dice would you like to roll? Please enter 1, 2, or 3.", "1"));
+            }
+            update();
+        }
+
+        function chooseRolls() {
+            numRolls = parseInt(prompt("How many times would you like to roll these " + numDice + " dice? Please enter an integer.", "1"));
+            while (!(Number.isInteger(numRolls))) {
+                numRolls = parseInt(prompt("How many times would you like to roll these " + numDice + " dice? Please enter an integer.", "1"));
+            }
+            alert("Great! Now click to roll the dice!");
+            update();
+        }
+
+    </script>
+    <title>Document</title>
+</head>
+
+<body onload="initialize();">
+    <div id="userInfo">
+        <p>You're rolling <span id="dicedisplay"></span> dice!</p>
+        <p>You're rolling <span id="rollsdisplay"></span> times!</p>
+        <button onclick="chooseDice();">Choose your dice!</button>
+        <button onclick="chooseRolls();">Choose amount of rolls!</button>
+        <button onclick="rollDice();">Roll the dice!</button>
+    </div>
+    <div id="table">
+        <table id="dicetable">
+            <tr id="tableheader">
+                <th>Roll</th>
+                <th>Result</th>
+                <th>Possible Values</th>
+                <th>Frequency</th>
+                <th>Mode</th>
+                <th>Median</th>
+                <th>Mean</th>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
