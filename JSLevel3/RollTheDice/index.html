@@ -22,7 +22,6 @@
             chooseDice();
             chooseRolls();
             update();
-            addColumns();
         }
 
         function update() {
@@ -30,13 +29,13 @@
             document.getElementById("rollsdisplay").innerHTML = numRolls;
         }
 
-        function addColumns() {
+        function addCells() {
             if (numDice > 1) {
-                var double = tableHeader.insertCell(-1);
-                double.innerHTML = "Double rolls";
+                newCell = newRow.insertCell();
+                newCell.innerHTML = "Double rolls";
                 if (numDice > 2) {
-                    var triple = tableHeader.insertCell(-1);
-                    triple.innerHTML = "Triple rolls"
+                    newCell = newRow.insertCell();
+                    newCell.innerHTML = "Triple rolls"
                 }
             }
         }
@@ -90,6 +89,14 @@
                 newCell.innerHTML = i;
             }
         }
+        newRow = diceTable.insertRow();
+        newCell = newRow.insertCell()
+        newCell.innerHTML = "Mean"
+        newCell = newRow.insertCell()
+        newCell.innerHTML = "Median"
+        newCell = newRow.insertCell()
+        newCell.innerHTML = "Mode"
+        addCells();
     }
         function chooseDice() {
             numDice = parseInt(prompt("How many dice would you like to roll? Please enter 1, 2, or 3.", "1"));
@@ -127,9 +134,6 @@
                 <th>Result</th>
                 <th>Possible Values</th>
                 <th>Frequency</th>
-                <th>Mode</th>
-                <th>Median</th>
-                <th>Mean</th>
             </tr>
         </table>
     </div>
