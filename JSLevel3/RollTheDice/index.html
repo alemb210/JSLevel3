@@ -1,142 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/RollTheDice/style.css">
+    <link rel="stylesheet" href="/style.css">
     <script>
-        var numDice;
-        var numRolls;
-        var roll1;
-        var roll2;
-        var roll3;
-        var rollSum;
-        var doubles;
-        var triples;
-        var arrayAllNums = [];
-        function initialize() {
-            diceTable = document.getElementById("dicetable");
-            tableHeader = document.getElementById("tableheader");
-            chooseDice();
-            chooseRolls();
-            update();
-        }
+      var numDice;
+      var numRolls;
+      var roll1;
+      var roll2;
+      var roll3;
+      var rollSum;
+      var doubles = 0;
+      var triples = 0;
+      var prevRolls = [];
 
-        function update() {
-            document.getElementById("dicedisplay").innerHTML = numDice;
-            document.getElementById("rollsdisplay").innerHTML = numRolls;
-        }
+      function initialize() {
+        diceTable = document.getElementById("dicetable");
+        tableHeader = document.getElementById("tableheader");
+        chooseDice();
+        chooseRolls();
+        update();
+        addCol();
+      }
 
-        function addCells() {
-            if (numDice > 1) {
-                newCell = newRow.insertCell();
-                newCell.innerHTML = "Double rolls";
-                if (numDice > 2) {
-                    newCell = newRow.insertCell();
-                    newCell.innerHTML = "Triple rolls"
-                }
+      function update() {
+        document.getElementById("dicedisplay").innerHTML = numDice;
+        document.getElementById("rollsdisplay").innerHTML = numRolls;
+      }
+
+      function addCol() {
+        if (numDice > 1) {
+          dice2 = tableHeader.insertCell(2);
+          dice2.innerHTML = "Dice 2";
+          dice2.setAttribute('class', 'tableHeader');
+          if (numDice > 2) {
+            dice3 = tableHeader.insertCell(3);
+            dice3.innerHTML = "Dice 3";
+            dice3.setAttribute('class', 'tableHeader');
+          }
+        }
+      }
+
+      function addCells() {
+        if (numDice > 1) {
+          newCell = newRow.insertCell();
+          newCell.innerHTML = "Double rolls: " + doubles;
+          newCell.setAttribute('class', 'tableFooter');
+          if (numDice > 2) {
+            newCell = newRow.insertCell();
+            newCell.innerHTML = "Triple rolls: " + triples;
+            newCell.setAttribute('class', 'tableFooter');
+          }
+        }
+      }
+
+      function rollDice() {
+        for (let i = 0; i < numRolls; i++) {
+          roll1 = Math.floor((Math.random() * (6 - 1) + 1));
+          rollSum = roll1;
+          if (numDice > 1) {
+            roll2 = Math.floor((Math.random() * (6 - 1) + 1));
+            rollSum += roll2;
+            if (numDice > 2) {
+              roll3 = Math.floor((Math.random() * (6 - 1) + 1));
+              rollSum += roll3;
+              if ((roll3 === roll2) && (roll3 === roll1)) {
+                triples++;
+              } else if ((roll3 === roll2) || (roll3 === roll1)) {
+                doubles++;
+              }
             }
-        }
-
-        function rollDice() {
-            for (let i = 0; i < numRolls; i++) {
-                roll1 = Math.floor((Math.random() * (6 - 1) + 1));
-                rollSum = roll1;
-                if (numDice > 1) {
-                    roll2 = Math.floor((Math.random() * (6 - 1) + 1));
-                    rollSum += roll2;
-                    if (numDice > 2) {
-                        roll3 = Math.floor((Math.random() * (6 - 1) + 1));
-                        rollSum += roll3;
-                        if ((roll3 === roll2) && (roll3 === roll1)) {
-                            triples++;
-                        }
-                        else if ((roll3 === roll2) || (roll3 === roll1)) {
-                            doubles++;
-                        }
-                    }
-                    if (roll2 === roll1) {
-                        doubles++;
-                    }
-                }
-
-                var newRow = diceTable.insertRow();
-                newRow.setAttribute('id', 'row' + i);
-                var newCell = newRow.insertCell();
-                newCell.innerHTML = "Roll " + (i + 1);
-                newCell = newRow.insertCell();
-                newCell.innerHTML = rollSum;
-                if((i + numDice) <= (numDice * 6)){
-                newCell = newRow.insertCell();
-                newCell.innerHTML = (i + numDice);
+            if (roll2 === roll1) {
+              doubles++;
             }
-            }
-            tableInfo();
-        }
+          }
 
-        function tableInfo() { 
+          prevRolls.push(rollSum);
+          var newRow = diceTable.insertRow();
+          newRow.setAttribute('id', 'row' + (i + 1));
+          newRow.setAttribute('class', 'row');
+          var newCell = newRow.insertCell();
+          newCell.innerHTML = "Roll " + (i + 1);
+          newCell = newRow.insertCell();
+          newCell.innerHTML = roll1;
+          if (numDice > 1) {
+            newCell = newRow.insertCell();
+            newCell.innerHTML = roll2;
+            if (numDice > 2) {
+              newCell = newRow.insertCell();
+              newCell.innerHTML = roll3;
+            }
+          }
+          newCell = newRow.insertCell();
+          newCell.innerHTML = rollSum;
+          if ((i + numDice) <= (numDice * 6)) {
+            newCell = newRow.insertCell();
+            newCell.innerHTML = (i + numDice);
+          }
+          
+        }
+        console.log(prevRolls);
+        tableInfo();
+      }
+
+      function tableInfo() {
         let max = (numDice * 6);
         let visMax = ((numRolls - 1) + numDice);
-        if(visMax < max) { 
-            for(i = visMax + 1; i <= max; i++){
-                newRow = diceTable.insertRow();
-                newRow.setAttribute('id', 'row' + i);
-                newCell = newRow.insertCell(0);
-                newCell = newRow.insertCell(1);
-                newCell = newRow.insertCell(2);
-                newCell.innerHTML = i;
+        if (visMax < max) {
+          for (i = visMax + 1; i <= max; i++) {
+            newRow = diceTable.insertRow();
+            newRow.setAttribute('id', 'row' + (i + 1 - numDice));
+            newRow.setAttribute('class', 'row');
+            for(x = 0; x <= (numDice + 2); x++){
+            newCell = newRow.insertCell(x);
             }
+            newCell.innerHTML = i;
+
+          }
         }
         newRow = diceTable.insertRow();
+        newRow.setAttribute('id', 'tableFooter');
         newCell = newRow.insertCell()
-        newCell.innerHTML = "Mean"
+        newCell.innerHTML = "Mean: " + mean(prevRolls);
+        newCell.setAttribute('class', 'tableFooter');
         newCell = newRow.insertCell()
-        newCell.innerHTML = "Median"
+        newCell.innerHTML = "Median: " + median(prevRolls.sort(compareNumbers));
+        newCell.setAttribute('class', 'tableFooter');
         newCell = newRow.insertCell()
-        newCell.innerHTML = "Mode"
+        newCell.innerHTML = "Mode: " + mode(prevRolls.sort(compareNumbers));
+        newCell.setAttribute('class', 'tableFooter');
         addCells();
-    }
-        function chooseDice() {
-            numDice = parseInt(prompt("How many dice would you like to roll? Please enter 1, 2, or 3.", "1"));
-            while (numDice != 1 && numDice != 2 && numDice != 3) {
-                numDice = parseInt(prompt("How many dice would you like to roll? Please enter 1, 2, or 3.", "1"));
-            }
-            update();
-        }
+        addFreq();
+      }
 
-        function chooseRolls() {
-            numRolls = parseInt(prompt("How many times would you like to roll these " + numDice + " dice? Please enter an integer.", "1"));
-            while (!(Number.isInteger(numRolls))) {
-                numRolls = parseInt(prompt("How many times would you like to roll these " + numDice + " dice? Please enter an integer.", "1"));
-            }
-            alert("Great! Now click to roll the dice!");
-            update();
+      function addFreq() { 
+        let max = (numDice * 6);
+        let min = numDice;
+        for(let i = min; i <= max; i++){
+          tempRow = document.getElementById("row" + (i - (numDice - 1)));
+          freqCell = tempRow.insertCell();
+          freqCell.innerHTML = checkFreq(i, prevRolls);
         }
+      }
+
+      function mean(array) { 
+        let sum = 0;
+        for(let i = 0; i < array.length; i++) { 
+          sum += array[i];
+        }
+        let avg = sum/array.length;
+        return avg.toFixed(2);
+      }
+      function chooseDice() {
+        numDice = parseInt(prompt("How many dice would you like to roll? Please enter 1, 2, or 3.", "1"));
+        while (numDice != 1 && numDice != 2 && numDice != 3) {
+          numDice = parseInt(prompt("How many dice would you like to roll? Please enter 1, 2, or 3.", "1"));
+        }
+        update();
+      }
+
+      function chooseRolls() {
+        numRolls = parseInt(prompt("How many times would you like to roll these " + numDice + " dice? Please enter an integer.", "1"));
+        while (!(Number.isInteger(numRolls))) {
+          numRolls = parseInt(prompt("How many times would you like to roll these " + numDice + " dice? Please enter an integer.", "1"));
+        }
+        alert("Great! Now click to roll the dice!");
+        update();
+      }
+
+      function checkFreq(num, array) { 
+        var frequency = 0;
+        for(let i = 0; i < array.length; i++) {
+          if(num === array[i]) { 
+            frequency++;
+          }
+        }
+        return frequency;
+      }
+
+      function median(array) {   
+        console.log(array);
+        let aL = array.length;
+        let median = 0;
+        if(aL % 2 === 0) { 
+          median = ((array[(aL/2)] + array[(aL/2) + 1])/2)
+        }
+        else { 
+          median = (array[Math.round(aL/2)]);
+        }
+        return median;
+      }
+
+      function mode(array) { 
+        let freqMaxNum = 0;
+        let freqMax = 0;
+        for(let x = 0; x < array.length; x++) { 
+          let freq = 0;
+          for(let y = 0; y < array.length; y++) {
+            if(array[x] === array[y]) {
+              console.log(array[x] + " is equal to " + array[y]);
+              freq++;
+            }
+          }
+          if(freq > freqMax) {
+            freqMax = freq;
+            freqMaxNum = array[x];
+          }
+        }
+        return freqMaxNum;
+      }
+
+      function compareNumbers(a, b) { 
+        return a - b;
+      }
 
     </script>
     <title>Document</title>
-</head>
+  </head>
 
-<body onload="initialize();">
+  <body onload="initialize();">
     <div id="userInfo">
-        <p>You're rolling <span id="dicedisplay"></span> dice!</p>
-        <p>You're rolling <span id="rollsdisplay"></span> times!</p>
-        <button onclick="chooseDice();">Choose your dice!</button>
-        <button onclick="chooseRolls();">Choose amount of rolls!</button>
-        <button onclick="rollDice();">Roll the dice!</button>
+      <p>You're rolling <span id="dicedisplay"></span> dice!</p>
+      <p>You're rolling <span id="rollsdisplay"></span> times!</p>
+      <button onclick="chooseDice();">Choose your dice!</button>
+      <button onclick="chooseRolls();">Choose amount of rolls!</button>
+      <button onclick="rollDice();">Roll the dice!</button>
     </div>
     <div id="table">
-        <table id="dicetable">
-            <tr id="tableheader">
-                <th>Roll</th>
-                <th>Result</th>
-                <th>Possible Values</th>
-                <th>Frequency</th>
-            </tr>
-        </table>
+      <table id="dicetable">
+        <tr id="tableheader">
+          <th>Roll #</th>
+          <th>Dice 1</th>
+          <th>Result</th>
+          <th>Possible Results</th>
+          <th>Frequency</th>
+        </tr>
+      </table>
     </div>
-</body>
+  </body>
 
 </html>
